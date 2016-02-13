@@ -12,3 +12,7 @@ sub binary {
 
 print binary(37) . "\n";
 print binary(215) . "\n";
+print binary(4024) . "\n";
+print binary(30245) . "\n";
+print binary(400231) . "\n";
+print binary(6476244) . "\n";
