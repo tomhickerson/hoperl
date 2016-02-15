@@ -7,3 +7,4 @@ sub factorial {
 }
 
 print factorial(15) . "\n";
+print factorial(45) . "\n";
