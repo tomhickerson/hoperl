@@ -16,3 +16,4 @@ print binary(4024) . "\n";
 print binary(30245) . "\n";
 print binary(400231) . "\n";
 print binary(6476244) . "\n";
+print binary(99999999) . "\n";
