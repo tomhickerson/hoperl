@@ -8,6 +8,7 @@ my $tree = HTML::TreeBuilder->new;
 $tree->ignore_ignorable_whitespace(0);
 $tree->parse($html);
 $tree->eof();
+# to be replaced by an actual mapping for those of us whose CPAN won't get the module
 
 sub untag_html {
     my ($html) = @_;
