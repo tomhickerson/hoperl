@@ -19,7 +19,11 @@ sub partition {
         $total += $treasure;
     }
     my $share_1 = find_share($total/2, [@_]);
+    #print "Looking for this total in find_share: " . $total . "\n";
     return unless defined $share_1;
+    #print "y";
+    # some extra debugging above, to see if we made it to this point
+    # it turns out that floats i.e. 7.5, will not return an answer
     my %in_share_1;
     for my $treasure(@$share_1) {
         ++$in_share_1{$treasure};
@@ -35,7 +39,22 @@ sub partition {
 
 }
 
-my $share = find_share(5, [1,2,4,8]);
-for my $treasure (@$share) {
+my $share_1 = find_share(7,[1,2,4,7]);
+for my $treasure (@$share_1) {
     print $treasure . "\n";
 }
+
+print "\nUsing partition, the list contains: ";
+
+my ($share_2, $share_3) = partition(1,2,4,7);
+for my $t (@$share_2) {
+    print $t . " ";
+}
+
+print "\nAnd the list does not contain: ";
+
+for my $x (@$share_3) {
+    print $x . " ";
+}
+
+print "\n";
