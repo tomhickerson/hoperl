@@ -29,6 +29,12 @@ print (RGB_to_CYMK(184, 90, 64) . "\n");
 print (RGB_to_CYMK(184, 90, 64) . "\n");
 print (RGB_to_CYMK(184, 90, 64) . "\n");
 print (RGB_to_CYMK(184, 90, 64) . "\n");
+print (RGB_to_CYMK(184, 90, 64) . "\n");
+print (RGB_to_CYMK(184, 90, 64) . "\n");
+print (RGB_to_CYMK(184, 90, 64) . "\n");
+print (RGB_to_CYMK(184, 90, 64) . "\n");
+
+print (RGB_to_CYMK(0, 255, 255) . "\n");
 
 my $end = time();
 
