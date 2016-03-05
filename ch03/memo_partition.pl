@@ -45,7 +45,7 @@ my ($target, @rest) = *partition->(7, [1,2,4,7]);
 print Dumper($target) . "\n";
 print Dumper(@rest) . "\n";
 
-my ($target2, @rest2) = *partition->(200, [1..20]);
+my ($target2, @rest2) = *partition->(200, [1..7]);
 print Dumper($target2) . "\n";
 print Dumper(@rest2) . "\n";
 
