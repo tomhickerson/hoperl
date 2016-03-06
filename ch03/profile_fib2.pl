@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 
 use Time::HiRes qw(time);
-# slow version of fibonacci from chapter 3 of HOP, but with an added profiler function
+# cached version of fibonacci from chapter 3 of HOP, but with an added profiler function
+# most effective to compare the two of these profiled applications, side by side
 
 my (%time, %calls);
 
