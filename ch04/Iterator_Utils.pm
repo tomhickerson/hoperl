@@ -9,3 +9,12 @@ use base Exporter;
 
 sub NEXTVAL { $_[0]->() }
 sub Iterator (&) { return $_[0] }
+sub filehandle_iterator {
+    my $fh = shift;
+    return Iterator { <$fh> };
+}
+sub iterate_function {
+    my $n = 0;
+    my $f = shift;
+    return Iterator { return $f->($n++); };
+}
