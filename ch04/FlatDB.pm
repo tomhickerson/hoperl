@@ -36,3 +36,25 @@ sub query {
         return;
     };
 }
+
+sub callbackquery {
+    my $self = shift;
+    my $is_interesting = shift;
+    my $fh = $self->{FH};
+    seek $fh, 0, SEEK_SET;
+    <$fh>;
+    return Iterator_Utils::Iterator {
+        local $_;
+        while (<$fh>) {
+            chomp;
+            my %F;
+            my @fieldnames = @{$self->{FIELDS}};
+            my @fields = split $self->{FIELDSEP};
+            for (0..$#fieldnames) {
+                $F{$fieldnames[$_]} = $fields[$_];
+            }
+            return $_ if $is_interesting->(%F);
+        }
+        return;
+    };
+}
