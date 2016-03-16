@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 
 # flat db, first example of a module for file access from chapter 04 of HOP
+# adding the bug fixes for multiple database handles
+
 package FlatDB;
 my $FIELDSEP = qr/:/;
 
@@ -25,10 +27,13 @@ sub query {
     my $fh = $self->{FH};
     seek $fh, 0, SEEK_SET;
     <$fh>;
+    my $position = tell $fh;
     return Iterator_Utils::Iterator {
         local $_;
+        seek $fh, $position, SEEK_SET;
         while (<$fh>) {
             chomp;
+            $position = tell $fh;
             my @fields = split $self->{FIELDSEP}, $_, -1;
             my $fieldval = $fields[$fieldnum];
             return $_ if $fieldval eq $value;
@@ -43,10 +48,13 @@ sub callbackquery {
     my $fh = $self->{FH};
     seek $fh, 0, SEEK_SET;
     <$fh>;
+    my $position = tell $fh;
     return Iterator_Utils::Iterator {
         local $_;
+        seek $fh, $position, SEEK_SET;
         while (<$fh>) {
-            chomp;
+            # chomp;
+            $position = tell $fh;
             my %F;
             my @fieldnames = @{$self->{FIELDS}};
             my @fields = split $self->{FIELDSEP};
@@ -58,3 +66,5 @@ sub callbackquery {
         return;
     };
 }
+
+1;
