@@ -24,7 +24,7 @@ sub query {
     return Iterator_Utils::Iterator {
         local $_;
         while (defined ($_ = Iterator_Utils::NEXTVAL($it))) {
-            my @fields = split $self->{FIELDSEP}, $_, -1;
+            my @fields = split $self->{FIELDSEP};
             my $fieldval = $fields[$fieldnum];
             return $_ if $fieldval eq $value;
         }
