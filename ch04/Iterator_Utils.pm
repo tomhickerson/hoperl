@@ -18,3 +18,23 @@ sub iterate_function {
     my $f = shift;
     return Iterator { return $f->($n++); };
 }
+
+sub imap (&$) {
+    my ($transform, $it) = @_;
+    return Iterator {
+        local $_ = NEXTVAL($it);
+        return unless defined $_;
+        return $transform->();
+    };
+}
+
+sub igrep (&$) {
+    my ($is_interesting, $it) = @_;
+    return Iterator {
+        local $_;
+        while (defined ($_ = NEXTVAL($it))) {
+            return $_ if $is_interesting->();
+        }
+        return;
+    };
+}
