@@ -38,3 +38,22 @@ sub igrep (&$) {
         return;
     };
 }
+
+sub list_iterator {
+    my @items = @_;
+    return Iterator {
+        return shift @items;
+    };
+}
+
+sub append {
+    my @its = @_;
+    return Iterator {
+        while (@its) {
+            my $val = NEXTVAL($its[0]);
+            return $val if defined $val;
+            shift @its; # discard exhausted operator
+        }
+        return;
+    };
+}
