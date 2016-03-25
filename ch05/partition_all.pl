@@ -2,6 +2,9 @@
 
 use Data::Dumper;
 
+# initial stab at the code examples from chapter 5 of HOP.
+# note that this dies upon execution, will continue to look at that
+
 sub partition {
     my ($target, $treasures) = @_;
     return [] if $target == 0;
