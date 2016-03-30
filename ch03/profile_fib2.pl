@@ -25,7 +25,7 @@ sub profile {
     sub fib {
         my ($month) = @_;
         unless (exists $cache{$month}) {
-            if ($month < 2) { $cache{$month} = 1; }
+            if ($month < 2) { $cache{$month} = $month; }
             else { $cache{$month} = fib($month-1) + fib($month-2); }
         }
         return $cache{$month};

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Time::HiRes qw(time);
-# slow version of fibonacci from chapter 3 of HOP, but with an added profiler function
+# new version of factorial-2 from page 241-242 of HOP, but with the profiler added from chapter 3 of HOP to capture run time and number of calls
 
 my (%time, %calls);
 
@@ -19,16 +19,20 @@ sub profile {
     return $stub;
 }
 
-
 sub fib {
-        my $month = shift;
-        if ($month < 2) { return $month }
-        else { return fib($month-1) + fib($month-2); }
+    my $n = shift;
+    if ($n < 2) {
+        return $n;
+    } else {
+        my $s1 = fib($n-1);
+        my $s2 = fib($n-2);
+        return $s1 + $s2;
+    }
 }
 
 *fib = profile(\&fib, 'fib');
-my $fibr = $ARGV[0];
-print *fib->($fibr) . "\n";
+my $f = $ARGV[0];
+print *fib->($f) . "\n";
 
 END {
     printf STDERR "%-12s %9s %6s\n", "Function", "# calls", "Elapsed";
