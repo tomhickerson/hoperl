@@ -6,7 +6,7 @@ use Time::HiRes qw(time);
 
 sub fib {
         my ($month) = @_;
-        if ($month < 2) { 1 }
+        if ($month < 2) { $month }
         else { fib($month-1) + fib($month-2); }
 }
 
