@@ -10,12 +10,14 @@ sub powerset_recurse ($;@) {
     my ($set, $powerset, $keys, $values, $nmembers, $i) = @_;
 
     if (@_ == 1) {
+        print Dumper $set;
         # initialise
         my $null = { };
         $powerset = { $null, $null };
         $keys = [ keys %{ $set } ];
         $values = [ values %{ $set } ];
         $nmembers = keys %{ $set }; # this many numbers
+        print "found $nmembers n-members\n";
         $i = 0; # the current round
     }
     return $powerset if $i == $nmembers;
@@ -33,12 +35,13 @@ sub powerset_recurse ($;@) {
         $powerset->{ \%subset } = \%subset;
     }
     # and recurse
+    print Dumper $powerset;
     powerset_recurse($set, $powerset, $keys, $values, $nmembers, $i+1);
 }
 
-my %set = {apple => 'red', banana => 'yellow', grape => 'purple'};
+my %set = (apple => "red", banana => "yellow", grape => "purple");
 
-my %otherset = powerset_recurse(%set);
+my %otherset = powerset_recurse(\%set);
 # my %otherotherset = keys %otherset;
 # my @otherotherotherset = keys %otherotherset;
 # print "Generates @otherotherotherset sets\n";
