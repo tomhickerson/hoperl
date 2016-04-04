@@ -5,7 +5,7 @@
 
 package Stream;
 use base Exporter;
-@EXPORT_OK = qw(node head tail drop upto upfrom show promise filter transfer merge list_to_stream cutsort iterate_function cut_loops);
+@EXPORT_OK = qw(node head tail drop upto upfrom show promise filter transform merge list_to_stream cutsort iterate_function cut_loops);
 
 %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
@@ -44,11 +44,23 @@ sub upfrom {
     node($m, promise { upfrom($m+1) });
 }
 
+sub drop {
+    my $h = head($_[0]);
+    $_[0] = tail($_[0]);
+    return $h;
+}
+
 sub show {
     my ($s, $n) = @_;
     while ($s && (! defined $n || $n-- > 0)) {
-        print head($s) . $";
-        $s = tail($s);
+        print drop($s) . $";
     }
     print $/;
+}
+
+sub transform (&$) {
+    my $f = shift;
+    my $s = shift;
+    return unless $s;
+    node($f->(head($s)), promise { transform($f, tail($s))});
 }
