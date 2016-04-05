@@ -23,10 +23,11 @@ sub is_promise {
     UNIVERSAL::isa($_[0], 'CODE');
 }
 
+# modifying tail from pages 268-269 from HOP to memoize
 sub tail {
     my ($s) = @_;
     if (is_promise($s->[1])) {
-        return $s->[1]->();
+        $s->[1] = $s->[1]->();
     }
     $s->[1];
 }
@@ -63,4 +64,19 @@ sub transform (&$) {
     my $s = shift;
     return unless $s;
     node($f->(head($s)), promise { transform($f, tail($s))});
+}
+
+sub filter (&$) {
+    my $f = shift;
+    my $s = shift;
+    until (! $s || $f->(head($s))) {
+        drop($s);
+    }
+    return if ! $s;
+    node(head($s), promise { filter($f, tail($s)) });
+}
+
+sub iterate_function {
+    my ($f, $x) = @_;
+    node($x, promise { iterate_function($f, $f->($x)) });
 }
