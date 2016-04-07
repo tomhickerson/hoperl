@@ -80,3 +80,18 @@ sub iterate_function {
     my ($f, $x) = @_;
     node($x, promise { iterate_function($f, $f->($x)) });
 }
+
+# adding merge from page 271 of HOP
+sub merge {
+    my ($S, $T) = @_;
+    return $T unless $S;
+    return $S unless $T;
+    my ($s, $t) = (head($S), head($T));
+    if ($s > $t) {
+        node($t, promise {merge($S, tail($T))});
+    } elsif ($s < $t) {
+        node($s, promise {merge(tail($S), $T)});
+    } else {
+        node($s, promise {merge(tail($S), tail($T))});
+    }
+}
