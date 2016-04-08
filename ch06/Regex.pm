@@ -5,7 +5,7 @@
 package Regex;
 use Stream ':all';
 use base 'Exporter';
-@EXPORT_OK = qw(literal union concat star plus charclass show matches);
+@EXPORT_OK = qw(literal union concat star plus charclass show2 matches);
 
 sub literal {
     my $string = shift;
@@ -37,4 +37,19 @@ sub concat {
     node("$s$t", promise { union(postcat(tail($S), $t),
                                  precat(tail($T), $s),
                                  concat(tail($S), tail($T)))});
+}
+
+sub star {
+    my $s = shift;
+    my $r;
+    $r = node("", promise { concat($s, $r) });
+}
+
+# changing show to show2 to differentiate from Stream::show
+sub show2 {
+    my ($s, $n) = @_;
+    while ($s && (! defined $n || $n-- > 0)) {
+        print qq{"}, drop($s), qq{"\n};
+    }
+    print "\n";
 }
