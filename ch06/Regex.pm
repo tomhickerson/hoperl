@@ -53,3 +53,15 @@ sub show2 {
     }
     print "\n";
 }
+
+# charclass('acd') = /^[acd]$/
+sub charclass {
+    my $class = shift;
+    union(map literal($_), split(//, $class));
+}
+
+# plus($s) = /^s+$/
+sub plus {
+    my $s = shift;
+    concat($s, star($s));
+}
