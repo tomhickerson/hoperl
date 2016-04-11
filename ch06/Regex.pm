@@ -12,11 +12,27 @@ sub literal {
     node($string, undef);
 }
 
+sub index_of_shortest {
+    my @s = @_;
+    my $minlen = length(head($s[0]));
+    my $si = 0;
+    for (1..$#s) {
+        my $h = head($s[$_]);
+        if (length($h) < $minlen) {
+            $minlen = length($h);
+            $si = $_;
+        }
+    }
+    $si;
+}
+
 sub union {
-    my ($h, @s) = grep $_, @_;
-    return unless $h;
-    return $h unless @s;
-    node(head($h), promise { union(@s, tail($h)); });
+    my (@s) = grep $_, @_;
+    return unless @s;
+    return $s[0] if @s == 1;
+    my $si = index_of_shortest(@s);
+    node(head($s[$si]), promise {
+        union(map $_ == $si ? tail($s[$_]) : $s[$_], 0..$#s) });
 }
 
 sub precat {
