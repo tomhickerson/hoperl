@@ -5,7 +5,7 @@
 
 package Stream;
 use base Exporter;
-@EXPORT_OK = qw(node head tail drop upto upfrom show promise filter transform merge list_to_stream cutsort iterate_function cut_loops);
+@EXPORT_OK = qw(node head tail drop upto upfrom show promise filter transform merge list_to_stream cutsort cut_bylen iterate_function cut_loops);
 
 %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
@@ -94,4 +94,54 @@ sub merge {
     } else {
         node($s, promise {merge(tail($S), tail($T))});
     }
+}
+
+# adding list_to_stream and cutsort from pages 290-291
+sub cut_bylen {
+    my ($a, $b) = @_;
+    length($a) < length($b);
+}
+
+sub list_to_stream {
+    my $node = pop;
+    while (@_) {
+        $node = node(pop, $node);
+    }
+    $node;
+}
+
+sub insert (\@$$);
+
+sub cutsort {
+    my ($s, $cmp, $cut, $pending) = @_;
+    my @emit;
+
+    while ($s) {
+        while (@pending && $cut->($pending[0], head($s))) {
+            push @emit, shift @pending;
+        }
+
+        if (@emit) {
+            return list_to_stream(@emit, promise { cutsort($s, $cmp, $cut, $pending) });
+        } else {
+            insert(@pending, head($s), $cmp);
+            $s = tail($s);
+        }
+    }
+    return list_to_stream(@pending, undef);
+}
+
+sub insert (\@$$) {
+    my ($a, $e, $cmp) = @_;
+    my ($lo, $hi) = (0, scalar(@$a));
+    while ($lo < $hi) {
+        my $med = int(($lo + $hi) / 2);
+        my $d = $cmp->($a->[$med], $e);
+        if ($d <= 0) {
+            $lo = $med + 1;
+        } else {
+            $hi = $med;
+        }
+    }
+    splice(@$a, $lo, 0, $e);
 }
