@@ -76,9 +76,11 @@ sub filter (&$) {
     node(head($s), promise { filter($f, tail($s)) });
 }
 
+# changing this function per page 304 of HOP
 sub iterate_function {
     my ($f, $x) = @_;
-    node($x, promise { iterate_function($f, $f->($x)) });
+    my $s;
+    $s = node($x, promise { &transform($f, $s) });
 }
 
 # adding merge from page 271 of HOP
