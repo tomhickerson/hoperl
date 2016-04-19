@@ -9,15 +9,6 @@ sub sqrt_stream {
                        }, $n);
 }
 
-sub close_enough {
-    my ($a, $b) = @_;
-    return abs($a - $b) < 1e-12;
-}
-
 my $n = 2;
 my $g2 = $n;
-
-until (close_enough($g2*$g2, $n)) {
-    $g2 = head(sqrt_stream($n, $g2));
-    print "$g2\n";
-}
+show(sqrt_stream($g2, $n), 5);
