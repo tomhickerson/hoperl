@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Stream 'iterate_function', 'show', 'head';
+use Stream 'iterate_function', 'show';
 
 sub sqrt_stream {
     my $n = shift;
