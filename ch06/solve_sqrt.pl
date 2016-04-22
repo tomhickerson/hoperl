@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Stream 'show', 'iterate_function';
+use Stream 'show', 'iterate_function', 'cut_loops';
 
 sub slope {
     my ($f, $x) = @_;
@@ -20,5 +20,5 @@ my $sqrt2 = solve(sub { $_[0] * $_[0] - 2});
 
 {
     local $" = "\n";
-    show($sqrt2, 10);
+    show(cut_loops($sqrt2));
 }

@@ -147,3 +147,17 @@ sub insert (\@$$) {
     }
     splice(@$a, $lo, 0, $e);
 }
+
+# adding the cut_loops function from pp 308-309 from HOP
+
+sub cut_loops {
+    my $s = shift;
+    return unless $s;
+    my @previous_values = @_;
+    for (@previous_values) {
+        if (head($s) == $_) {
+            return;
+        }
+    }
+    node(head($s), promise { cut_loops(tail($s), head($s), @previous_values) });
+}
