@@ -14,6 +14,11 @@ sub owed_after_n_months {
     owed(100000, $N, 1000, 0.005);
 }
 
+sub affordable_mortgage {
+    my $mort = shift;
+    owed($mort, 30, 15600, 0.0275);
+}
+
 # copying the following from the sqrt problem
 sub slope {
     my ($f, $x) = @_;
@@ -34,3 +39,9 @@ my $stream = cut_loops(solve(\&owed_after_n_months));
 my $n;
 $n = drop($stream) while $stream;
 print "You will be paid off in only $n months\n";
+
+# adding the mortgage question from p. 313 from HOP
+my $stream2 = cut_loops(solve(\&affordable_mortgage));
+my $n2;
+$n2 = drop($stream2) while $stream2;
+print "and you can afford a \$$n2 mortgage\n";
