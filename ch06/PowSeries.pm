@@ -65,3 +65,31 @@ sub evaluate {
     my ($s, $x) = @_;
     partial_sums(term_values($s, $x));
 }
+
+sub derivative {
+    my $s = shift;
+    mul2(upfrom(1), tail($s));
+}
+
+$exp = tabulate(sub { my $N = shift; 1/factorial($N) });
+
+$log_ = tabulate(sub { my $N = shift;
+                       $N == 0 ? 0 : (-1)**$N/-$N });
+
+sub scale {
+    my ($s, $c) = @_;
+    return if $c == 0;
+    return $s if $c == 1;
+    transform { $_[0]*$c } $s;
+}
+
+sub multiply {
+    my ($S, $T) = @_;
+    my ($s, $t) = (head($S), head($T));
+    node($s*$t, promise { add2(scale(tail($T), $s),
+                          add2(scale(tail($S), $t),
+                               node(0, promise { multiply(tail($S),
+                                                          tail($T))}),
+                               ))
+         });
+}
