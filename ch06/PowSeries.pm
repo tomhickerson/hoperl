@@ -83,13 +83,32 @@ sub scale {
     transform { $_[0]*$c } $s;
 }
 
+sub sum {
+    my @s = grep $_, @_;
+    my $total = 0;
+    $total += head($_) for @s;
+    node($total, promise { sum(map tail($_), @s)});
+}
+
 sub multiply {
     my ($S, $T) = @_;
     my ($s, $t) = (head($S), head($T));
-    node($s*$t, promise { add2(scale(tail($T), $s),
-                          add2(scale(tail($S), $t),
+    node($s*$t, promise { sum(scale(tail($T), $s), scale(tail($S), $t),
                                node(0, promise { multiply(tail($S),
                                                           tail($T))}),
-                               ))
+                               )
          });
 }
+
+sub recip {
+    my ($s) = shift;
+    my $r;
+    $r = node(1, promise { scale(multiply($r, tail($s)), -1) });
+}
+
+sub divide {
+    my ($s, $t) = @_;
+    multiply($s, recip($t));
+}
+
+$tan = divide($sin, $cos);

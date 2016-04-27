@@ -12,3 +12,7 @@ print "\n";
 
 my $one = add2(multiply($cos, $cos), multiply($sin, $sin));
 show($one, 20);
+
+print "\n";
+
+show($tan, 10);
