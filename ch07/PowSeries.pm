@@ -4,7 +4,7 @@
 
 package PowSeries;
 use base 'Exporter';
-@EXPORT_OK = qw(add2 mul2 partial_sums powers_of term_values evaluate derivative multiply recip divide $sin $cos $exp $log_ $tan);
+@EXPORT_OK = qw(add2 mul2 partial_sums powers_of term_values evaluate derivative multiply recip divide $add2 $mul2 $sin $cos $exp $log_ $tan);
 %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 use Stream ':all';
 
@@ -33,23 +33,24 @@ $cos = tabulate(sub { my $N = shift;
                 });
 
 sub combine2 {
-    my ($s, $t, $op) = @_;
-    return unless $s && $t;
-    node($op->(head($s), head($t)), promise {combine2(tail($s),tail($t),$op)});
+    my $op = shift;
+    return sub {
+        my ($s, $t) = @_;
+        return unless $s && $t;
+        node($op->(head($s), head($t)),
+             promise { combine2($op)->(tail($s),tail($t))});
+    };
 }
 
-sub add2 {
-    combine2(@_, sub {$_[0] + $_[1] });
-}
+$add2 = combine2(sub {$_[0] + $_[1] });
 
-sub mul2 {
-    combine2(@_, sub {$_[0] * $_[1] });
-}
+$mul2 = combine2(sub {$_[0] * $_[1] });
+
 
 sub partial_sums {
     my $s = shift;
     my $t;
-    $t = node(head($s), promise { add2($t, tail($s))});
+    $t = node(head($s), promise { $add2->($t, tail($s))});
 }
 
 sub powers_of {
@@ -59,7 +60,7 @@ sub powers_of {
 
 sub term_values {
     my ($s, $x) = @_;
-    mul2($s, powers_of($x));
+    $mul2->($s, powers_of($x));
 }
 
 sub evaluate {
@@ -69,7 +70,7 @@ sub evaluate {
 
 sub derivative {
     my $s = shift;
-    mul2(upfrom(1), tail($s));
+    $mul2->(upfrom(1), tail($s));
 }
 
 $exp = tabulate(sub { my $N = shift; 1/factorial($N) });
