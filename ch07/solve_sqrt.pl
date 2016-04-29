@@ -17,10 +17,11 @@ sub slope {
 sub solve {
     my $f = shift;
     my $guess = shift || 1;
-    iterate_function(sub { my $g = shift;
+    my $func = iterate_function(sub { my $g = shift;
                            my $func = slope($f);
                      $g - $f->($g)/$func->($g);
-                     }, $guess);
+                     });
+    $func->($guess);
 }
 
 my $sqrt2 = solve(sub { $_[0] * $_[0] - 2});

@@ -77,10 +77,14 @@ sub filter (&$) {
 }
 
 # changing this function per page 304 of HOP
+# changing it again, per page 332 for currying
 sub iterate_function {
-    my ($f, $x) = @_;
-    my $s;
-    $s = node($x, promise { &transform($f, $s) });
+    my $f = shift;
+    return sub {
+        my $x = shift;
+        my $s;
+        $s = node($x, promise { &transform($f, $s) });
+    };
 }
 
 # adding merge from page 271 of HOP
