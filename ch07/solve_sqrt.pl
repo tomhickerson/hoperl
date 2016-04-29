@@ -7,10 +7,11 @@ use Stream 'show', 'iterate_function', 'cut_loops';
 sub slope {
     my $f = shift;
     my $e = 0.00000095367431640625;
-    return sub {
+    my $d = sub {
         my $x = shift;
         ($f->($x+$e) - $f->($x-$e)) / (2*$e);
     };
+    return @_ ? $d->(shift) : $d;
 }
 
 sub solve {
