@@ -24,18 +24,26 @@ sub is_zero_when_x_is_pi {
 }
 
 # copying the following from the sqrt problem
+# changing to replace code for chapter 07, currying
+
 sub slope {
-    my ($f, $x) = @_;
+    my $f = shift;
     my $e = 0.00000095367431640625;
-    ($f->($x+$e) - $f->($x-$e)) / (2*$e);
+    my $d = sub {
+        my $x = shift;
+        ($f->($x+$e) - $f->($x-$e)) / (2*$e);
+    };
+    return @_ ? $d->(shift) : $d;
 }
 
 sub solve {
     my $f = shift;
     my $guess = shift || 1;
-    iterate_function(sub { my $g = shift;
-                     $g - $f->($g)/slope($f, $g);
-                     }, $guess);
+    my $func = iterate_function(sub { my $g = shift;
+                           my $func = slope($f);
+                     $g - $f->($g)/$func->($g);
+                     });
+    $func->($guess);
 }
 
 my $pi = 3.1415926535897932;

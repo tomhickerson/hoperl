@@ -55,7 +55,8 @@ sub partial_sums {
 
 sub powers_of {
     my $x = shift;
-    iterate_function(sub {$_[0] * $x}, 1);
+    my $func = iterate_function(sub {$_[0] * $x});
+    $func->(1);
 }
 
 sub term_values {
