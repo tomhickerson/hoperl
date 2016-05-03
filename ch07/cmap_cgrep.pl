@@ -3,7 +3,7 @@
 # options of map and grep using currying from chapter 07 of HOP
 use Data::Dumper;
 
-sub cmap(&) {
+sub cmap(&;@) {
     my $f = shift;
     my $r = sub {
         my @result;
@@ -12,10 +12,10 @@ sub cmap(&) {
         }
         @result;
     };
-    return $r;
+    return @_ ? $r->(@_) : $r;
 }
 
-sub cgrep(&) {
+sub cgrep(&;@) {
     my $f = shift;
     my $r = sub {
         my @result;
@@ -24,11 +24,13 @@ sub cgrep(&) {
         }
         @result;
     };
-    return $r;
+    return @_ ? $r->(@_) : $r;
 }
 
-my $double = cmap { $_ * 2 };
-my $triple = cmap { $_ * 3 };
+my @double = cmap { $_ * 2 } (1..5);
+my @triple = cmap { $_ * 3 } (1..5);
+my @quadruple = cgrep { $_ % 4 == 0} (1..20);
 
-print Dumper($double->(1..5));
-print Dumper($triple->(1..5));
+print Dumper(@double);
+print Dumper(@triple);
+print Dumper(@quadruple);
