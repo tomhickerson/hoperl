@@ -16,6 +16,8 @@ my $target = "I like pie";
 my $first_N_chars = csubstr($target, 0);
 my $prefix_3 = $first_N_chars->(3);
 my $prefix_5 = $first_N_chars->(5);
+my $prefix_7 = $first_N_chars->(7);
 
 print $prefix_3 . "\n";
 print $prefix_5 . "\n";
+print $prefix_7 . "\n";
