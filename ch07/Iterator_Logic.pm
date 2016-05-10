@@ -28,5 +28,23 @@ sub i_or_ {
     };
 }
 
+sub i_and_ {
+    my ($cmp, $a, $b) = @_;
+    my ($av, $bv) = ($a->(), $b->());
+    return sub {
+        my $d;
+        until (! defined $av || ! defined $bv || ($d = $cmp->($av, $bv)) == 0) {
+            if ($d < 0) { $av = $a->() }
+            else { $bv = $b->() }
+        }
+        return unless defined $av && defined $bv;
+        my $rv = $av;
+        ($av, $bv) = ($a->(), $b->());
+        return $rv;
+    }
+}
+
 use Curry;
-BEGIN { *i_or = curry(\&i_or_) }
+BEGIN { *i_or = curry(\&i_or_);
+        *i_and = curry(\&i_and_);
+}
