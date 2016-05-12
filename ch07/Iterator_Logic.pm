@@ -3,7 +3,7 @@
 # Iterator Logic, a package from chapter 07 of HOP
 package Iterator_Logic;
 use base 'Exporter';
-@EXPORT = qw(i_or_ i_or i_and_ i_without_ i_without);
+@EXPORT = qw(i_or_ i_or i_and_ i_and i_without_ i_without);
 
 sub i_or_ {
     my ($cmp, $a, $b) = @_;

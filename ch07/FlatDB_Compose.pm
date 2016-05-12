@@ -8,6 +8,11 @@ use base 'Exporter';
 @EXPORT_OK = qw(query_or query_and query_not query_without);
 use Iterator_Logic;
 
+BEGIN {
+    *query_or = i_or(sub { $_[0][0] <=> $_[1][0]});
+    *query_and = i_and(sub { $_[0][0] <=> $_[1][0]});
+}
+
 # usage: $dbh->query(fieldname, value);
 # returns all records for which fieldname == value
 sub query {
