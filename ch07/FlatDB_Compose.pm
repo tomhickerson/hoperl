@@ -11,6 +11,7 @@ use Iterator_Logic;
 BEGIN {
     *query_or = i_or(sub { $_[0][0] <=> $_[1][0]});
     *query_and = i_and(sub { $_[0][0] <=> $_[1][0]});
+    *query_without = i_without(sub { my ($a, $b) = @_; $a->[0] <=> $b->[0]});
 }
 
 # usage: $dbh->query(fieldname, value);
@@ -66,6 +67,16 @@ sub callbackquery {
         }
         return;
     };
+}
+
+sub query_not {
+    my $self = shift;
+    my $q = shift;
+    query_without($self->all, $q);
+}
+
+sub all {
+    $_[0]->callbackquery( sub { 1 });
 }
 
 1;

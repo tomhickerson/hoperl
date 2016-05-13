@@ -44,7 +44,29 @@ sub i_and_ {
     }
 }
 
+# $a but not $b
+sub i_without_ {
+    my ($cmp, $a, $b) = @_;
+    my ($av, $bv) = ($a->(), $b->());
+    return sub {
+        while (defined $av) {
+            my $d;
+            while (defined $bv && ($d = $cmp->($av, $bv)) > 0) {
+                $bv = $b->();
+            }
+            if (!defined $bv || $d < 0) {
+                my $rv = $av; $av = $a->(); return $rv;
+            } else {
+                $bv = $b->();
+                $av = $a->();
+            }
+        }
+        return;
+    }
+}
+
 use Curry;
 BEGIN { *i_or = curry(\&i_or_);
         *i_and = curry(\&i_and_);
+        *i_without = curry(\&i_without_);
 }
