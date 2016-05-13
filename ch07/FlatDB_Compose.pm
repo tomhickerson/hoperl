@@ -40,3 +40,32 @@ sub query {
         return;
     };
 }
+
+sub callbackquery {
+    my $self = shift;
+    my $is_interesting = shift;
+    my $fh = $self->{FH};
+    seek $fh, 0, SEEK_SET;
+    <$fh>;
+    my $position = tell $fh;
+    my $recno = 0;
+    return sub {
+        local $_;
+        seek $fh, $position, SEEK_SET;
+        while (<$fh>) {
+            $position = tell $fh;
+            chomp;
+            $recno++;
+            my %F;
+            my @fieldnames = @{$self->{FIELDS}};
+            my @fields = split $self->{FIELDSEP};
+            for (0..$#fieldnames) {
+                $F{$fieldnames[$_]} = $fields[$_];
+            }
+            return [$recno, @fields] if $is_interesting->(%F);
+        }
+        return;
+    };
+}
+
+1;
