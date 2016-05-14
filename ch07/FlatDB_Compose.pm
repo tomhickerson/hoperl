@@ -14,6 +14,11 @@ BEGIN {
     *query_without = i_without(sub { my ($a, $b) = @_; $a->[0] <=> $b->[0]});
 }
 
+use overload '|' => \&query_or,
+    '&' => \&query_and,
+    '-' => \&query_without,
+    'fallback' => 1;
+
 # usage: $dbh->query(fieldname, value);
 # returns all records for which fieldname == value
 sub query {
