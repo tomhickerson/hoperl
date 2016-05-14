@@ -9,3 +9,8 @@ Wall:Larry:Mountain View:CA:-35.66
 Cooke:Marie:Sanderson:TX:-45.78
 Greene:Thomas:Del Valle:TX:300.01
 Chappee:Anne:Sugarville:TX:0.00
+Huckabee:Mike:Allston:MA:1200.00
+Williams:Martel:Brookline:MA:1455.00
+Smith:Egbert:Houston:TX:0.00
+Schweaty:Pete:Shreveport:LA:-4500.00
+Grimm:Reaper:Buffalo:NY:10.00

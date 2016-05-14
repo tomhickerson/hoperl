@@ -14,6 +14,6 @@ my ($ny, $debtor, $ma) = ($dbh->query('STATE', 'NY'),
 
 my $q1 = query_or($ny, query_and($debtor, $ma));
 
-for (1..2) {
-    print Dumper(NEXTVAL($q1)) . "\n";
+while (defined(my $q2 = NEXTVAL($q1))) {
+    print Dumper($q2) . "\n";
 }
