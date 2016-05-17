@@ -29,20 +29,21 @@ sub records {
 }
 
 sub tokens {
-    my ($input, $label, $pattern) = @_;
+    my ($input, $label, $pattern, $maketoken) = @_;
+    $maketoken ||= sub { [ $_[1], $_[0]]};
     my @tokens;
     my ($buf, $finished) = ("");
     my $split = sub { split /$pattern/, $_[0] };
-    my $maketoken = sub { [$label, $_[0]] };
     sub {
         while (@tokens == 0 && ! $finished) {
             my $i = $input->();
             if (ref $i) {
                 # input is a token
                 my ($sep, $tok) = $split->($buf);
-                $tok = $maketoken->($tok) if defined $tok;
+                $tok = $maketoken->($tok, $label) if defined $tok;
                 push @tokens, grep defined && $_ ne "", $sep, $tok, $i;
                 $buf = "";
+                last;
             } else {
                 # input is an untokenized string
                 $buf .= $i if defined $i;
@@ -51,11 +52,11 @@ sub tokens {
                     # buffer contains complete separator and complete token
                     # or we have reached the end of the input
                     push @tokens, shift(@newtoks);
-                    push @tokens, $maketoken->(shift @newtoks) if @newtoks;
+                    push @tokens, $maketoken->(shift(@newtoks), $label) if @newtoks;
                 }
                 # reassemble last contents of buffer
                 $buf = join "", @newtoks;
-                $finished = 1 if !defined $i;
+                undef $buf if ! defined $i;
                 @tokens = grep $_ ne "", @tokens;
             }
         }
@@ -80,4 +81,13 @@ sub blocks {
         return unless read $fh, my($block), $blocksize;
         return $block;
     }
+}
+
+sub make_lexer {
+    my $lexer = shift;
+    while (@_) {
+        my $args = shift;
+        $lexer = tokens($lexer, @$args);
+    }
+    $lexer;
 }
