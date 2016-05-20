@@ -29,7 +29,7 @@ sub INT {
     return ($token_value, tail($input));
 }
 
-# another token recognizing function
+# another token recognizing function, as compared to INT above
 sub lookfor {
     my $wanted = shift;
     my $value = shift || sub { $_[0][1] };
