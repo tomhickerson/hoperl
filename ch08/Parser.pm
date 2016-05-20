@@ -19,3 +19,32 @@ sub End_of_Input {
     my $input = shift;
     defined($input) ? () : (undef, undef);
 }
+
+sub INT {
+    my $input = shift;
+    return unless defined $input;
+    my $next = head($input);
+    return unless $next->[0] eq 'INT';
+    my $token_value = $next->[1];
+    return ($token_value, tail($input));
+}
+
+# another token recognizing function
+sub lookfor {
+    my $wanted = shift;
+    my $value = shift || sub { $_[0][1] };
+    my $u = shift;
+    $wanted = [$wanted] unless ref $wanted;
+    my $parser = parser {
+        my $input = shift;
+        return unless defined $input;
+        my $next = head($input);
+        for my $i (0..$#$wanted) {
+            next unless defined $wanted->[$i];
+            return unless $wanted->[$i] eq $next->[$i];
+        }
+        my $wanted_value = $value->($next, $u);
+        return ($wanted_value, tail($input));
+    };
+    return $parser;
+}
