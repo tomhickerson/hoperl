@@ -48,3 +48,15 @@ sub lookfor {
     };
     return $parser;
 }
+
+sub parser (&) { $_[0] }
+
+sub concatenate {
+    my ($p1, $p2) = @_;
+    my $parser = parser {
+        my $input0 = shift;
+        my ($v1, $input1) = $p1->($input0) or return;
+        my ($v2, $input2) = $p2->($input1) or return;
+        return ([$v1, $v2], $input2);
+    }
+}
