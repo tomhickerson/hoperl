@@ -52,11 +52,39 @@ sub lookfor {
 sub parser (&) { $_[0] }
 
 sub concatenate {
-    my ($p1, $p2) = @_;
+    my @p = @_;
+    return \&nothing if @p == 0;
+
     my $parser = parser {
-        my $input0 = shift;
-        my ($v1, $input1) = $p1->($input0) or return;
-        my ($v2, $input2) = $p2->($input1) or return;
-        return ([$v1, $v2], $input2);
+        my $input = shift;
+        my $v;
+        my @values;
+        for (@p) {
+            ($v, $input) = $_->($input) or return;
+            push @values, $v;
+        }
+        return (\@values, $input);
     }
+}
+
+sub alternate {
+    my @p = @_;
+    return parser { return () } if @p == 0;
+    return $p[0] if @p == 1;
+    my $parser = parser {
+        my $input = shift;
+        my ($v, $newinput);
+        for (@p) {
+            if (($v, $newinput) = $_->($input)) {
+                return ($v, $newinput);
+            }
+        }
+        return;
+    };
+}
+
+sub star {
+    my $p = shift;
+    my $p_star;
+    $p_star = alternate(concatenate($p, parser { $p_star->(@_) }), \&nothing);
 }
