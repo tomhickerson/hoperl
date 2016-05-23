@@ -88,3 +88,11 @@ sub star {
     my $p_star;
     $p_star = alternate(concatenate($p, parser { $p_star->(@_) }), \&nothing);
 }
+
+sub list_of {
+    my ($element, $separator) = @_;
+    $separator = lookfor('COMMA') unless defined $separator;
+    return concatenate($element, star(concat($separator, $element)));
+}
+
+1;
