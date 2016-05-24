@@ -91,3 +91,14 @@ sub make_lexer {
     }
     $lexer;
 }
+
+use Stream 'node';
+
+sub iterator_to_stream {
+    my $it = shift;
+    my $v = $it->();
+    return unless defined $v;
+    node($v, sub { iterator_to_stream($it) });
+}
+
+1;
