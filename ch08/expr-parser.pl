@@ -38,5 +38,5 @@ if (my($result, $remaining_input) = $entire_input->($lexer)) {
     use Data::Dumper;
     print Dumper($result) . "\n";
 } else {
-    print "Parse Error!\n" . $result . "\n" . $remaining_input;
+    print "Parse Error!\n" . $result . "\n" . $remaining_input . $entire_input;
 }
