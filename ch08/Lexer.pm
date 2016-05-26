@@ -32,35 +32,37 @@ sub tokens {
     my ($input, $label, $pattern, $maketoken) = @_;
     $maketoken ||= sub { [ $_[1], $_[0]]};
     my @tokens;
-    my ($buf, $finished) = ("");
-    my $split = sub { split /$pattern/, $_[0] };
+    my $buf = "";
+    my $split = sub { split /($pattern)/, $_[0] };
     sub {
-        while (@tokens == 0 && ! $finished) {
+        while (@tokens == 0 && defined $buf) {
             my $i = $input->();
             if (ref $i) {
                 # input is a token
+                # print "input is a token\n";
                 my ($sep, $tok) = $split->($buf);
                 $tok = $maketoken->($tok, $label) if defined $tok;
                 push @tokens, grep defined && $_ ne "", $sep, $tok, $i;
                 $buf = "";
                 last;
-            } else {
-                # input is an untokenized string
-                $buf .= $i if defined $i;
-                my @newtoks = $split->($buf);
-                while (@newtoks > 2 || @newtoks && !defined $i) {
+            }
+            # removing the else from there, which is not very intuitive from the book
+            # print "input is a string: $buf\n";
+            # input is an untokenized string
+            $buf .= $i if defined $i;
+            my @newtoks = $split->($buf);
+            while (@newtoks > 2 || @newtoks && !defined $i) {
                     # buffer contains complete separator and complete token
                     # or we have reached the end of the input
                     push @tokens, shift(@newtoks);
                     push @tokens, $maketoken->(shift(@newtoks), $label) if @newtoks;
-                }
-                # reassemble last contents of buffer
-                $buf = join "", @newtoks;
-                undef $buf if ! defined $i;
-                @tokens = grep $_ ne "", @tokens;
             }
+            # reassemble last contents of buffer
+            $buf = join "", @newtoks;
+            undef $buf if ! defined $i;
+            @tokens = grep $_ ne "", @tokens;
         }
-        return shift(@tokens);
+        return $_[0] eq 'peek' ? $tokens[0] : shift(@tokens);
     }
 }
 
@@ -87,8 +89,10 @@ sub make_lexer {
     my $lexer = shift;
     while (@_) {
         my $args = shift;
+        # print "$args\n";
         $lexer = tokens($lexer, @$args);
     }
+    # print "done with tokens\n";
     $lexer;
 }
 

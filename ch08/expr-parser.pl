@@ -21,7 +21,7 @@ $expression = alternate(
 
 my $entire_input = concatenate($Expression, \&End_of_Input);
 
-my @input = q[2 * 3 + (4 * 5)];
+my @input = q[2 + 3 * (5 + 6)];
 
 my $input = sub { return shift @input };
 
@@ -38,5 +38,5 @@ if (my($result, $remaining_input) = $entire_input->($lexer)) {
     use Data::Dumper;
     print Dumper($result) . "\n";
 } else {
-    print "Parse Error!\n" . $result . "\n" . $remaining_input . $entire_input;
+    print "Parse Error!\n" . $result . "\n" . $remaining_input . "\n";
 }
