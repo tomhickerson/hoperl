@@ -39,7 +39,7 @@ sub tokens {
             my $i = $input->();
             if (ref $i) {
                 # input is a token
-                # print "input is a token\n";
+                # print "input is a token: $buf\n";
                 my ($sep, $tok) = $split->($buf);
                 $tok = $maketoken->($tok, $label) if defined $tok;
                 push @tokens, grep defined && $_ ne "", $sep, $tok, $i;
