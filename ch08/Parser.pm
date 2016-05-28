@@ -20,6 +20,19 @@ sub End_of_Input {
     defined($input) ? () : (undef, undef);
 }
 
+sub T {
+    my ($parser, $transform) = @_;
+    return parser {
+        my $input = shift;
+        if (my($value, $newinput) = $parser->($input)) {
+            $value = $transform->(@$value);
+            return ($value, $newinput);
+        } else {
+            return;
+        }
+    };
+}
+
 sub INT {
     my $input = shift;
     return unless defined $input;
