@@ -15,6 +15,11 @@ sub nothing {
     return (undef, $input);
 }
 
+sub null_list {
+    my $input = shift;
+    return ([], $input);
+}
+
 sub End_of_Input {
     my $input = shift;
     defined($input) ? () : (undef, undef);
@@ -99,7 +104,7 @@ sub alternate {
 sub star {
     my $p = shift;
     my $p_star;
-    $p_star = alternate(concatenate($p, parser { $p_star->(@_) }), \&nothing);
+    $p_star = alternate(T(concatenate($p, parser { $p_star->(@_) }), sub { my ($first, $rest) = @_; [$first, @$rest];}), \&null_list);
 }
 
 sub list_of {
