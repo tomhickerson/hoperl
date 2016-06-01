@@ -113,4 +113,19 @@ sub list_of {
     return concatenate($element, star(concat($separator, $element)));
 }
 
+sub operator {
+    my ($subpart, @ops) = @_;
+    my (@alternatives);
+    for my $operator (@ops) {
+        my ($op, $opfunc) = @$operator;
+        push @alternatives, T(concatenate($op, $subpart), sub { my $subpart_value = $_[1];
+                                                                sub { $opfunc->($_[0], $subpart_value) } });
+    }
+    my $result = T(concatenate($subpart, star(alternate(@alternatives))), sub { my ($total, $funcs) = @_;
+                   for my $f (@$funcs) {
+                       $total = $f->($total);
+                   }
+                                                                                $total; });
+}
+
 1;
