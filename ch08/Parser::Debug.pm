@@ -9,10 +9,6 @@ use Parser ':all';
 
 my $CON = 'A';
 
-sub concatenate {
-
-}
-
 sub debug ($) {
     return unless $DEBUG || $ENV{$DEBUG};
     my $msg = shift;
