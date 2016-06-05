@@ -128,4 +128,34 @@ sub operator {
                                                                                 $total; });
 }
 
+# adding the error subroutine from pages 429-430
+sub error {
+    my ($checker, $continuation) = @_;
+    my $p;
+    $p = parser {
+        my $input = shift;
+        #debug "Error in $N{$continuation}";
+        #debug "Discaring up to $N{$checker}";
+        my @discarded;
+        while (defined($input)) {
+            my $h = head($input);
+            if (my (undef, $result) = $checker->($input)) {
+                #debug "Discarding $N{$checker}";
+                push @discarded, $N{$checker};
+                $input = $result;
+                last;
+            } else {
+                #debug "Discarding token [@$h]\n";
+                push @discarded, $h->[1];
+                drop($input);
+            }
+        }
+        warn "Erroneous input: ignoring '@discarded'\n" if @discarded;
+        return unless defined $input;
+        $continuation->($input);
+    };
+    $N{$p} = "errhandler($N{$continuation} -> $N{$checker})";
+    return $p;
+}
+
 1;
