@@ -158,4 +158,15 @@ sub error {
     return $p;
 }
 
+
+sub debug (&) {
+    return unless $DEBUG || $ENV{$DEBUG};
+    my $msg = shift;
+    my $i = 0;
+    $i++ while caller($i);
+    $I = "| " x ($i-2);
+    print $I, $msg;
+}
+
+
 1;
