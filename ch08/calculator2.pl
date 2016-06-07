@@ -5,7 +5,7 @@ use Lexer ':all';
 # slightly modified version of the calculator, as we want to get input not from a file just yet
 
 # my $input = allinput(\*STDIN);
-my @input = q[a=12345679 * 6; b= a * 9; c=0; print b; c=4 ** 2; print c;];
+my @input = q[a=12345679 * 6; b= a * 9; c=0 print b; c=4 ** 2; print c;];
 my $input = sub { return shift @input };
 
 my $lexer = iterator_to_stream(
@@ -44,6 +44,7 @@ $statement = alternate(T(concatenate(lookfor('PRINT'),
                                      lookfor('TERMINATOR')
                                     ),
                          sub { $VAR{$_[0]} = $_[2] }),
+                       error(lookfor('TERMINATOR'), $Statement),
                       );
 
 $expression = operator($Term,   [lookfor(['OP', '+']), sub { $_[0] + $_[1] }],
