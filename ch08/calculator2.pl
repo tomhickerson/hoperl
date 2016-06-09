@@ -5,6 +5,7 @@ use Lexer ':all';
 # slightly modified version of the calculator, as we want to get input not from a file just yet
 
 # my $input = allinput(\*STDIN);
+
 my @input = q[a=12345679 * 6; b= a * 9; c=0 print b; c=4 ** 2; print c;];
 my $input = sub { return shift @input };
 

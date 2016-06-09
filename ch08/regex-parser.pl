@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Lexer ':all';
-use Stream 'node';
+use Stream 'node', 'show';
 
 my ($regex, $alternative, $atom, $qatom);
 sub regex_to_stream {
@@ -37,3 +37,11 @@ $qatom = T(concatenate($Atom, alternate(lookfor('QUANT'), \&nothing),
            sub { my($at, $q) = @_; defined $q ? $quant{$q}->($at) : $at });
 
 %quant = ('*' => \&Regex::star, '+' => \&Regex::plus, '?' => \&Regex::query);
+
+$atom = alternate(lookfor('ATOM', sub { Regex::literal($_[0][1]) }),
+    T(concatenate(lookfor(['PAREN', '(']), $Regex, lookfor(['PAREN', ')']),
+      ), sub { $_[1] }),
+    );
+
+my $stream = regex_to_stream("(a|b)+(c|d*)");
+show($stream, 10);
