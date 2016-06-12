@@ -20,3 +20,15 @@ use Stream 'head';
 my $Tree = parser { $tree->(@_) };
 my $Subtree = parser { $subtree->(@_) };
 my $LEVEL = 0;
+$tree = concatenate(lookfor('ITEM', sub { trim($_[0][1]) }),
+    action(sub { $LEVEL++ }),
+    star($Subtree),
+                    action(sub { $LEVEL-- }));
+
+my $BULLET = '[#*ox.+-]\s+';
+sub trim {
+    my $s = shift;
+    $s =~ s/^ *//;
+    $s =~ s/^$BULLET//o;
+    return $s;
+}

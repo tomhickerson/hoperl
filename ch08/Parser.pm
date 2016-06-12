@@ -168,5 +168,13 @@ sub debug (&) {
     print $I, $msg;
 }
 
+sub action {
+    my $action = shift;
+    return parser {
+        my $input = shift;
+        $action->($input);
+        return (undef, $input);
+    }
+}
 
 1;
