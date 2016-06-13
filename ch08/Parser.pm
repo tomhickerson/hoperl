@@ -174,7 +174,16 @@ sub action {
         my $input = shift;
         $action->($input);
         return (undef, $input);
-    }
+    };
+}
+
+sub test {
+    my $action = shift;
+    return parser {
+        my $input = shift;
+        my $result = $action->($input);
+        return $result ? (undef, $input) : ();
+    };
 }
 
 1;
