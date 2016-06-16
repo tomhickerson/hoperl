@@ -27,3 +27,14 @@ sub lex_input {
                                    )
         );
 }
+
+use Parser ':all';
+use FlatDB_Compose qw(query_or query_and);
+my ($cquery, $squery, $term);
+my $CQuery = parser { $cquery->(@_) };
+my $SQuery = parser { $squery->(@_) };
+my $Term = parser { $term->(@_) };
+
+use FlatDB;
+$cquery = operator($Term, [lookfor('OR'), \&query_or] );
+$term = operator($SQuery, [lookfor('AND'), \&query_and] );
