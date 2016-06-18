@@ -81,6 +81,14 @@ sub parse_query {
     return $result;
 }
 
+use Iterator_Utils 'NEXTVAL';
 use Data::Dumper;
 my $first_query = "STATE = 'NY' | OWES > 100 & STATE = 'MA'";
-print Dumper(parse_query($first_query));
+#print Dumper(parse_query($first_query));
+my $dbh = FlatDB_Compose->new('db.txt') or die $!;
+
+my $q1 = parse_query($dbh, $first_query);
+
+while (defined(my $q2 = NEXTVAL($q1))) {
+    print Dumper($q2) . "\n";
+}
