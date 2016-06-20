@@ -42,3 +42,41 @@ sub notify_all_but {
         $node->notify;
     }
 }
+
+sub attach {
+    my ($self, @nodes) = @_;
+    push @{$self->{A}}, @nodes;
+}
+
+sub attachments { @{$_[0]->{A}}}
+
+sub name {
+    $_[0]{N} || "$_[0]";
+}
+
+sub settor { $_[0]{S} }
+
+sub has_settor { defined $_[0]{S} }
+
+sub settor_is { $_[0]{S} == $_[1] }
+
+sub revoke {
+    my ($self, $revoker) = @_;
+    return unless $self->has_value;
+    return unless $self->setter_is($revoker);
+    undef $self->{V};
+    $self->notify_all_but($revoker, undef);
+    undef $self->{S};
+}
+
+sub value {
+    my ($self, $querent) = @_;
+    return if $self->settor_is($querent);
+    $self->{V};
+}
+
+sub has_value {
+    my ($self, $querent) = @_;
+    return if $self->setter_is($querent);
+    defined $_[0]{V};
+}
