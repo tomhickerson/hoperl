@@ -92,3 +92,10 @@ my $q1 = parse_query($dbh, $first_query);
 while (defined(my $q2 = NEXTVAL($q1))) {
     print Dumper($q2) . "\n";
 }
+
+my $second_query = "OWES >= 3000";
+my $q3 = parse_query($dbh, $second_query);
+
+while (defined(my $q4 = NEXTVAL($q3))) {
+    print Dumper($q4) . "\n";
+}
