@@ -80,3 +80,5 @@ sub has_value {
     return if $self->setter_is($querent);
     defined $_[0]{V};
 }
+
+1;

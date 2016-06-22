@@ -44,3 +44,4 @@ sub revoke_wire {
     my $wire = $self->wire($wire_name);
     $wire->revoke($self);
 }
+1;
