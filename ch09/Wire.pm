@@ -63,7 +63,7 @@ sub settor_is { $_[0]{S} == $_[1] }
 sub revoke {
     my ($self, $revoker) = @_;
     return unless $self->has_value;
-    return unless $self->setter_is($revoker);
+    return unless $self->settor_is($revoker);
     undef $self->{V};
     $self->notify_all_but($revoker, undef);
     undef $self->{S};
@@ -77,7 +77,7 @@ sub value {
 
 sub has_value {
     my ($self, $querent) = @_;
-    return if $self->setter_is($querent);
+    return if $self->settor_is($querent);
     defined $_[0]{V};
 }
 

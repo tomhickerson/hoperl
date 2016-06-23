@@ -79,7 +79,58 @@ sub new_divider {
 
 sub new_constant {
     my ($val, $w) = @_;
-    my $node = Node->new('Constant', sub {}, {'W' => $w}, );
+    my $node = Node->new('Constant', sub {}, {W => $w} );
     $w->set($node, $val);
     $node;
 }
+
+# we handle input and output with the announce and IO methods
+{
+    my $announce = sub {
+        my $name = shift;
+        sub {
+            my ($self, %val) = @_;
+            my $v = $val{W};
+            if (defined $v) {
+                print "$name: $v\n";
+            } else {
+                print "$name: no longer defined\n";
+            }
+        };
+    };
+    sub new_io {
+        my ($name, $w) = @_;
+        Node->new('Io', $announce->($name), { W => $w });
+    }
+}
+
+sub input {
+    my ($self, $value) = @_;
+    $self->wire('W')->set($self, $value);
+}
+
+sub revoke {
+    my $self = shift;
+    $self->wire('W')->revoke($self);
+}
+
+# next step: create the local propagation network
+# it's important to check the errata page, as we get funky output
+my ($F, $C);
+{
+    my ($i, $j, $k, $l, $m) = Wire->make(5);
+    $F = new_io('Fahrenheit', $j);
+    $C = new_io('Celsius', $m);
+    new_constant(32, $i);
+    new_constant(5/9, $l);
+    new_adder($i, $k, $j);
+    new_multiplier($k, $l, $m);
+}
+
+input($F, 212);
+input($F, 32);
+revoke($F);
+input($C, 37);
+input($F, 100);
+revoke($C);
+input($F, 100);
