@@ -27,8 +27,8 @@ sub set {
         $self->{S} = $settor;
         $self->notify_all_but($settor, $value);
     } elsif ($self->has_settor) {
-        unless ($value == $self->value) {
-            my $v = $self->value;
+        unless ($value == $self->value($settor)) {
+            my $v = $self->value($settor);
             my $N = $self->name;
             warn "Wire $N has inconsistent value ($value != $v)\n";
         }
@@ -62,7 +62,7 @@ sub settor_is { $_[0]{S} == $_[1] }
 
 sub revoke {
     my ($self, $revoker) = @_;
-    return unless $self->has_value;
+    # return unless $self->has_value;
     return unless $self->settor_is($revoker);
     undef $self->{V};
     $self->notify_all_but($revoker, undef);
