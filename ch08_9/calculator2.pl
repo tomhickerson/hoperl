@@ -50,22 +50,24 @@ $expression = $Term - star(L('OP', '+') - $Term
                            )
     >> sub { my($first, $rest) = @_; for my $f (@$rest) { $first = $f->($first); } $first; };
 
-$term = operator($Factor, [lookfor(['OP', '*']), sub { $_[0] * $_[1] }],
-                  [lookfor(['OP', '/']), sub { $_[0] / $_[1] }]);
+$term = $Factor - star(L('OP', '*') - $Factor
+                       >> sub { my $factor = $_[1];
+                                sub { $_[0] * $factor } }
+                       |
+                       L('OP', '/') - $Factor
+                       >> sub { my $factor = $_[1];
+                                sub {$_[0] / $factor }} )
+    >> sub { my($first, $rest) = @_; for my $f (@$rest) { $first = $f->($first); } $first; };
 
-$factor = T(concatenate($Base,
-                        alternate(T(concatenate(lookfor(['OP', '**']),
-                                                $Factor),
-                                    sub { $_[1] }),
-                                  T(\&nothing, sub { 1 }))),
-            sub { $_[0] ** $_[1] });
+$factor = $Base - (L('OP', '**') - $Factor >> sub { $_[1] }
+    |
+    $Parser::nothing >> sub { 1 }
+    )
+    >> sub { $_[0] ** $_[1] };
 
-$base      = alternate(lookfor('INT'),
-                       lookfor('IDENTIFIER',
-                                sub { $VAR{$_[0][1]} || 0 }),
-                       T(concatenate(lookfor(['OP', '(']),
-                                     $Expression,
-                                     lookfor(['OP', ')'])),
-                         sub { $_[1] })
-                      );
+$base      = L('INT') | lookfor('IDENTIFIER',
+                                sub { $VAR{$_[0][1]}})
+    | L('OP', '(') - $Expression - L('OP', ')')
+                         >> sub { $_[1] }
+                      ;
 $program->($lexer);

@@ -9,7 +9,8 @@ use base Exporter;
 @EXPORT_OK = qw(parser nothing End_of_Input lookfor alternate concatenate star list_of operator T error action test L);
 %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
-sub parser (&) { bless $_[0] => __PACKAGE__ };
+# sub parser (&) { bless $_[0] => __PACKAGE__ };
+sub parser (&);
 
 sub nothing {
     my $input = shift;
@@ -148,6 +149,8 @@ sub operator {
 
 # note that originally the author wanted us to create _ as the function name, but later recanted this in the errata.  So, we pick L for Lookfor.
 sub L { @_ = [@_]; goto &lookfor }
+
+sub parser (&) { bless $_[0] => __PACKAGE__ };
 
 use overload '-' => \&concatenate2, '|' => \&alternate2, '>>' => \&T, '""' => \&overload::StrVal;
 # the author later states that we could use "" to pull out the parser name with a parser_name function, but we'll keep this for now
