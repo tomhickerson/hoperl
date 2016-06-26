@@ -117,6 +117,8 @@ sub revoke {
 # next step: create the local propagation network
 # it's important to check the errata page, as we get funky output
 my ($F, $C);
+# adding Kelvins here
+my $K;
 {
     my ($i, $j, $k, $l, $m) = Wire->make(5);
     $F = new_io('Fahrenheit', $j);
@@ -125,6 +127,10 @@ my ($F, $C);
     new_constant(5/9, $l);
     new_adder($i, $k, $j);
     new_multiplier($k, $l, $m);
+    my ($n, $p) = Wire->make(2);
+    $K = new_io('Kelvin', $n);
+    new_constant(273.15, $p);
+    new_adder($m, $p, $n);
 }
 
 input($F, 212);
@@ -134,3 +140,4 @@ input($C, 37);
 input($F, 100);
 revoke($C);
 input($F, 100);
+input($K, 100);
