@@ -30,3 +30,34 @@ sub varlist {
     my $self = shift;
     grep $_ ne "", keys %$self;
 }
+
+# added from errata, to account for floating-point craziness
+my $EPSILON = 1e-6;
+
+sub arithmetic {
+    my ($a, $ac, $b, $bc) = @_;
+    my %new;
+    for my $k (keys(%$a), keys %$b) {
+        my ($av) = $a->coefficient($k);
+        my ($bv) = $b->coefficient($k);
+        my $new = $ac * $av + $bc * $bv;
+        $new{$k} = abs($new) < $EPSILON ? 0 : $new;
+    }
+    $a->new(%new);
+}
+
+sub add_equations {
+    my ($a, $b) = @_;
+    arithmetic($a, 1, $b, 1);
+}
+
+sub subtract_equations {
+    my ($a, $b) = @_;
+    arithmetic($a, 1, $b, -1);
+}
+
+# was $Zero, but not sure about that one
+sub scale_equation {
+    my ($a, $c) = @_;
+    arithmetic($a, $c, 0, 0);
+}
