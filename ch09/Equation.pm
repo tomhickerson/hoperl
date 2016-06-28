@@ -11,3 +11,22 @@ sub new {
     }
     bless \%self => $class;
 }
+
+sub duplicate {
+    my $self = shift;
+    $self->new(%$self);
+}
+
+sub coefficient {
+    my ($self, $name) = @_;
+    $self->{$name} || 0;
+}
+
+sub constant {
+    $_[0]->coefficient("");
+}
+
+sub varlist {
+    my $self = shift;
+    grep $_ ne "", keys %$self;
+}
