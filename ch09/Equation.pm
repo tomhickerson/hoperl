@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 # Equation, starting to fill in the linogram assignment in section 9.4 of HOP
+package Equation;
 
 sub new {
     my ($base, %self) = @_;
@@ -60,4 +61,39 @@ sub subtract_equations {
 sub scale_equation {
     my ($a, $c) = @_;
     arithmetic($a, $c, 0, 0);
+}
+
+# labeled in the book as Destructive, since it modified $self in place
+sub substitute_for {
+    my ($self, $var, $value) = @_;
+    my $a = $self->coefficient($var);
+    return if $a == 0;
+    my $b = $value->coefficient($var);
+    die "Should not occur!" if $b == 0; # should not occur
+    my $result = arithmetic($self, 1, $value, -$a/$b);
+    %$self = %$result;
+}
+
+sub a_var {
+    my $self = shift;
+    my ($var) = $self->varlist;
+    $var;
+}
+
+# this is the part of the book where we move back and forth between packages, and so I'm adding where I see it fits best.
+sub is_tautology {
+    my $self = shift;
+    return $self->constant == 0 && $self->varlist == 0;
+}
+
+sub is_inconsistent {
+    my $self = shift;
+    return $self->constant != 0 && $self->varlist == 0;
+}
+
+sub normalize {
+    my $self = shift;
+    my $var = $self->a_var;
+    return unless defined $var;
+    %$self = %{$self->scale_equation(1/$self->coefficient($var))};
 }
