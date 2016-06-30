@@ -97,3 +97,11 @@ sub normalize {
     return unless defined $var;
     %$self = %{$self->scale_equation(1/$self->coefficient($var))};
 }
+
+sub defines_var {
+    my $self = shift;
+    my @keys = keys %$self;
+    return unless @keys == 2;
+    my $var = $keys[0] || $keys[1];
+    return $self->{$var} == 1 ? $var : 0;
+}
