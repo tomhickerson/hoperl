@@ -47,3 +47,17 @@ sub normalize {
     my $self = shift;
     $self->apply(sub {$_[0]->Equation::normalize});
 }
+
+sub values {
+    my $self = shift;
+    my %values;
+    $self->solve;
+    for my $eqn ($self->equations) {
+        if (my $name = $eqn->Equation::defines_var) {
+            $values{$name} = -$eqn->Equation::constant;
+        }
+    }
+    %values;
+}
+
+1;
