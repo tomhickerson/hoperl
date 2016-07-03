@@ -19,3 +19,21 @@ my %op = ("add" => {
           },
 
     );
+
+sub op {
+    my ($self, $op, $operand) = @_;
+    my ($k1, $k2) = ($self->kindof, $operand->kindof);
+    my $method;
+    if ($method = $op{$op}{"$k1,$k2"}) {
+        $self->method($operand);
+    } elsif ($method = $op{$op}{"$k2,$k1"}) {
+        $operand->method($self);
+    } else {
+        my $name = $op{$op}{NAME} || '$op';
+        die "$name of $k1 and $k2 not defined!";
+    }
+}
+
+sub negate { $_[0]->scale(-1); }
+
+sub reciprocal { die "Nonlinear division!"; }
