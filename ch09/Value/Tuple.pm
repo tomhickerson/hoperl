@@ -3,6 +3,8 @@
 package Value::Tuple;
 @Value::Tuple::ISA = 'Value';
 
+# from chapter 09 of HOP; establish the Tuple subclass of Value.
+
 sub kindof { "TUPLE" }
 
 sub new {
