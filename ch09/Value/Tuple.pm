@@ -52,3 +52,8 @@ sub add_tuples {
     }
     $t1->new(%result);
 }
+
+sub mul_tuple_con {
+    my ($t, $c) = @_;
+    $t->scale($c->value);
+}
