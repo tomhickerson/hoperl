@@ -37,3 +37,36 @@ sub apply {
     }
     $self->new(\%result);
 }
+
+sub qualify {
+    my ($self, $prefix) = @_;
+    $self->apply(sub { $_[0]->qualify($prefix)});
+}
+
+sub scale {
+    my ($self, $coeff) = @_;
+    $self->apply(sub {$_[0]->scale_equation($coeff)});
+}
+
+sub apply2 {
+    my ($self, $arg, $func) = @_;
+    my %result;
+    for my $k ($self->labels) {
+        next unless $arg->has_label($k);
+        $result{$k} = $func->($self->constraint($k), $arg->constraint($k));
+    }
+    $self->new(\%result);
+}
+
+sub apply_hash {
+    my ($self, $hash, $func) = @_;
+    my %result;
+    for my $c (keys %$hash) {
+        my $dotc = ".$c";
+        for my $k ($self->labels) {
+            next unless $k eq $c || substr($k, -length($dotc)) eq $dotc;
+            $result{$k} = $func->($self->constraint($k), $hash->{$c});
+        }
+    }
+    $self->new(\%result);
+}
