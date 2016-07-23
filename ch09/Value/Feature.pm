@@ -20,3 +20,8 @@ sub new_from_var {
 
 sub intrinsic { $_[0]->{INTRINSIC}}
 sub synthetic { $_[0]->{SYNTHETIC}}
+
+sub scale {
+    my ($self, $coeff) = @_;
+    return $self->new($self->intrinsic, $self->synthetic->scale($coeff));
+}
