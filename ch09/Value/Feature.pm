@@ -25,3 +25,21 @@ sub scale {
     my ($self, $coeff) = @_;
     return $self->new($self->intrinsic, $self->synthetic->scale($coeff));
 }
+
+sub add_features {
+    my ($o1, $o2) = @_;
+    my $intrinsic = $o1->intrinsic->union($o2->intrinsic);
+    my $synthetic = $o1->synthetic->apply2($o2->synthetic, sub {$_[0]->add_equations($_[1])}, );
+}
+
+sub mul_feature_con {
+    my ($o, $c) = @_;
+    $o->scale($c->value);
+}
+
+sub add_feature_con {
+    my ($o, $c) = @_;
+    my $v = $c->value;
+    my $synthetic = $o->synthetic->apply(sub { $_[0]->add_constant($v) });
+    $o->new($o->intrinsic, $synthetic);
+}
