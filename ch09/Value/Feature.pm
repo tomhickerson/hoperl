@@ -43,3 +43,23 @@ sub add_feature_con {
     my $synthetic = $o->synthetic->apply(sub { $_[0]->add_constant($v) });
     $o->new($o->intrinsic, $synthetic);
 }
+
+sub add_feature_tuple {
+    my ($o, $t) = @_;
+    my $synthetic = $o->synthetic->apply_hash($t->to_hash,
+        sub { my ($constr, $comp) = @_;
+                                              my $kind = $comp->kindof;
+                                              if ($kind eq "CONSTANT") {
+                                                  $constr->add_constant($comp->value);
+                                              } elsif ($kind eq "FEATURE") {
+                                                  $constr->add_equations($comp->synthetic->constraint(""));
+                                              } elsif ($kind eq "TUPLE") {
+                                                  die "Tuple with subtuple component!";
+                                              } else {
+                                                  die "Unknown tuple component $kind!";
+                                              }},
+        );
+    $o->new($o->intrinsic, $synthetic);
+}
+
+1;
