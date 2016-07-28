@@ -37,3 +37,5 @@ sub has_subfeature {
     my ($self, $name) = @_;
     defined ($self->subfeature($name, "don't croak"));
 }
+
+# additional features go here
