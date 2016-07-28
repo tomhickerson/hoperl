@@ -39,3 +39,41 @@ sub has_subfeature {
 }
 
 # additional features go here
+
+sub constraints {
+    my $self = shift;
+    my @constraints = @{$self->{C}};
+    my $p = $self->parent;
+    if (defined $p) {
+        push @constraints, @{$p->constraints};
+    }
+    while (my ($name, $type) = each %{$self->{O}}) {
+        my @subconstraints = @{$type->constraints};
+        push @constraints, map $_->qualify($name), @subconstraints;
+    }
+    \@constraints;
+}
+
+sub constraint_set {
+    my $self = shift;
+    Constraint_Set->new(@{$self->constraints});
+}
+
+sub intrinsic_constraints {
+    my $constraints = $_[0]->constraints;
+    Intrinsic_Constraint_Set->new(@$constraints);
+}
+
+sub qualified_intrinsic_constraints {
+    $_[0]->intrinsic_constraints->qualify($_[1]);
+}
+
+sub all_leaf_subfeatures {
+    my $self = shift;
+    my @all;
+    my %base = $self->subfeatures;
+    while (my ($name, $type) = each %base) {
+        push @all, map {$_ eq "" ? $name : "$name.$_"} $type->all_leaf_subfeatures;
+    }
+    @all;
+}
