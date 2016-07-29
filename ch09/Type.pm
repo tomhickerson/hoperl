@@ -77,3 +77,12 @@ sub all_leaf_subfeatures {
     }
     @all;
 }
+
+sub synthetic_constraints {
+    my @subfeatures = $_[0]->all_leaf_subfeatures;
+    Synthetic_Constraint_Set->new(map {$_ => Constraint->new($_ => 1)} @subfeatures);
+}
+
+sub qualified_synthetic_constraints {
+    $_[0]->synthetic_constraints->qualify($_[1]);
+}
