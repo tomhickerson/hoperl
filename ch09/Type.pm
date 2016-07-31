@@ -86,3 +86,30 @@ sub synthetic_constraints {
 sub qualified_synthetic_constraints {
     $_[0]->synthetic_constraints->qualify($_[1]);
 }
+
+sub add_drawable {
+    my ($self, $drawable) = @_;
+    push @{$self->{D}}, $drawable;
+}
+
+sub subfeatures {
+    my $self = shift;
+    my %all;
+    while ($self) {
+        %all = (%{$self->{0}}, %all);
+        $self = $self->parent;
+    }
+    %all;
+}
+
+sub drawables {
+    my ($self) = @_;
+    return @{$self->{D}} if $self->{D} && @{$self->{D}};
+    if (my $p = $self->parent) {
+        my @drawables = $p->drawables;
+        return @drawables if @drawables;
+    }
+    my %subfeature = $self->subfeatures;
+    my @drawables = grep ! $subfeature{$_}->is_scalar, keys %subfeature;
+    @drawables;
+}
