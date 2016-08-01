@@ -113,3 +113,36 @@ sub drawables {
     my @drawables = grep ! $subfeature{$_}->is_scalar, keys %subfeature;
     @drawables;
 }
+
+sub add_subfeature {
+    my ($self, $name, $type) = @_;
+    $self->{0}{$name} = $type;
+}
+
+sub add_constraints {
+    my ($self, @values) = @_;
+    for my $value (@values) {
+        next unless $value->kindof eq 'FEATURE';
+        push @{$self->{C}}, $value->intrinsic->constraints, $value->synthetic->constraints;
+    }
+}
+
+sub draw {
+    my ($self, $env) = @_;
+    unless ($env) {
+        my $equations = $self->constraint_set;
+        my %solutions = $equations->values;
+        $env = Environment->new(%solutions);
+    }
+    for (my $name = $self->drawables) {
+        if (ref $name) { # a coderef, not a name
+            $name->($env);
+        } else {
+            my $type = $self->subfeature($name);
+            my $subenv = $env->subset($name);
+            $type->draw($subenv);
+        }
+    }
+}
+
+1;
