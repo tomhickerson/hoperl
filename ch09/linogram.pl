@@ -16,4 +16,11 @@ my $tokens = iterator_to_stream(make_lexer($input, @keywords,
                                      my $s = shift;
                                      $s =~ s/^__END__\s//;
                                      ['ENDMARKER', $s]
-                                 }])); #adding identifier later
+                                 }],
+                                ['IDENTIFIER', qr/[a-zA-Z_]\w*/],
+                                ['NUMBER', qr/(?: \d+ (?: \.\d+)? | \.\d+)(?: [eE] \d+)? /x],
+                                ['FUNCTION', qr/&/],
+                                ['DOT', qr/\./],
+                                ['COMMA', qr/,/],
+                                ['OP', qr|[-+*/]|],
+                                ['EQUALS', qr/=/])); #adding lparen later
