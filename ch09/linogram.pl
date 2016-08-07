@@ -23,4 +23,14 @@ my $tokens = iterator_to_stream(make_lexer($input, @keywords,
                                 ['DOT', qr/\./],
                                 ['COMMA', qr/,/],
                                 ['OP', qr|[-+*/]|],
-                                ['EQUALS', qr/=/])); #adding lparen later
+                                ['EQUALS', qr/=/],
+                                ['LPARENS', qr/[(]/],
+                                ['RPARENS', qr/[)]/],
+                                ['LBRACE', qr/[{]/],
+                                ['RBRACE', qr/[}]\n*/],
+                                ['TERMINATOR', qr/;\n*/],
+                                ['WHITESPACE', qr/\s+/, sub { "" }])); #all the items, more later?
+
+# the main data structure in linogram is Types. which is a hash mapping known Type names to the objects that represent them.
+my $ROOT_TYPE = Type->new('ROOT');
+my %TYPES = ('number' => Type::Scalar->new('number'), 'ROOT' => $ROOT_TYPE);
