@@ -13,8 +13,8 @@ use base Exporter;
 sub parser (&);
 
 sub nothing {
-    my $input = shift;
-    return (undef, $input);
+    my ($input, $continuation) = @_;
+    return $continuation->($input);
 }
 
 sub null_list {
@@ -64,7 +64,7 @@ sub lookfor {
     my $u = shift;
     $wanted = [$wanted] unless ref $wanted;
     my $parser = parser {
-        my $input = shift;
+        my ($input, $continuation) = @_;
         return unless defined $input;
         my $next = head($input);
         for my $i (0..$#$wanted) {
@@ -72,8 +72,14 @@ sub lookfor {
             return unless $wanted->[$i] eq $next->[$i];
         }
         my $wanted_value = $value->($next, $u);
-        return ($wanted_value, tail($input));
+        # try the continuation here
+        if (my ($v) = $continuation->(tail($input))) {
+            return $wanted_value;
+        } else {
+            return;
+        }
     };
+    $N{$parser} = "[@$wanted]";
     return $parser;
 }
 
@@ -103,16 +109,18 @@ sub alternate {
     my @p = @_;
     return parser { return () } if @p == 0;
     return $p[0] if @p == 1;
-    my $parser = parser {
-        my $input = shift;
-        my ($v, $newinput);
+    my $p;
+    $p = parser {
+        my ($input, $continuation) = @_;
         for (@p) {
-            if (($v, $newinput) = $_->($input)) {
-                return ($v, $newinput);
+            if (my ($v) = $_->($input, $continuation)) {
+                return $v;
             }
         }
-        return;
+        return; # this is failure
     };
+    $N{$p} = "(" . join(" | ", map $N{$_}, @p) . ")";
+    return $p;
 }
 
 sub alternate2 {
@@ -152,7 +160,10 @@ sub L { @_ = [@_]; goto &lookfor }
 
 sub parser (&) { bless $_[0] => __PACKAGE__ };
 
-use overload '-' => \&concatenate2, '|' => \&alternate2, '>>' => \&T, '""' => \&overload::StrVal;
+use overload '-' => \&concatenate2,
+    '|' => \&alternate2,
+    '>>' => \&T,
+    '""' => \&overload::StrVal;
 # the author later states that we could use "" to pull out the parser name with a parser_name function, but we'll keep this for now
 
 # adding the error subroutine from pages 429-430
