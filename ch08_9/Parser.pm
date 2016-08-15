@@ -28,24 +28,20 @@ sub End_of_Input {
 }
 
 # updated to allow for nested inputs from concatenate()
+# update to allow for continuations
 sub T {
     my ($parser, $transform) = @_;
-    return parser {
-        my $input = shift;
-        if (my($value, $newinput) = $parser->($input)) {
-            # flatten nested inputs
-            my @values;
-            while (ref($value) eq 'Pair') {
-                unshift @values, $value->[1];
-                $value = $value->[0];
-            }
-            unshift @values, $value;
-            $value = $transform->(@values);
-            return ($value, $newinput);
+    my $p = sub {
+        my ($input, $continuation) = @_;
+        if (my $v = $parser->($input, $continuation)) {
+            $v = $transform->(@$v);
+            return $v;
         } else {
             return;
         }
     };
+    $N{$p} = $N{$parser};
+    return $p;
 }
 
 sub INT {
@@ -83,26 +79,56 @@ sub lookfor {
     return $parser;
 }
 
-sub concatenate {
-    my @p = @_;
-    return \&nothing if @p == 0;
-
-    my $parser = parser {
-        my $input = shift;
-        my $v;
-        my @values;
-        for (@p) {
-            ($v, $input) = $_->($input) or return;
-            push @values, $v;
-        }
+#sub concatenate {
+#    my @p = @_;
+#    return \&nothing if @p == 0;
+#
+#    my $parser = parser {
+#        my $input = shift;
+#        my $v;
+#        my @values;
+#        for (@p) {
+#            ($v, $input) = $_->($input) or return;
+#            push @values, $v;
+#        }
         #return (\@values, $input);
-        return (bless(\@values => 'Pair'), $input);
-    }
-}
+#        return (bless(\@values => 'Pair'), $input);
+#    }
+#}
+
+#sub concatenate2 {
+#    my ($A, $B) = @_;
+#    concatenate($A, $B);
+#}
+
+# providing the new concatenate here from p 477, but may replace it back with the above later
 
 sub concatenate2 {
     my ($A, $B) = @_;
-    concatenate($A, $B);
+    my $p;
+    $p = parser {
+        my ($input, $continuation) = @_;
+        my ($aval, $bval);
+        my $BC = parser {
+            my ($newinput) = @_;
+            return unless $bval = $B->($newinput, $continuation);
+        };
+        $N{$BC} = "$N{$B} $N{$continuation}";
+        if (($aval) = $A->($input, $BC)) {
+            return ([$aval, $bval]);
+        } else {
+            return;
+        }
+    };
+    $N{$p} = "$N{$A} $N{$B}";
+    return $p;
+}
+
+sub concatenate {
+    my (@p) = @_;
+    return \&nothing if @p == 0;
+    my $p0 = shift @p;
+    return concatenate2($p0, concatenate(@p));
 }
 
 sub alternate {
