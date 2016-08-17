@@ -13,8 +13,8 @@ use base Exporter;
 sub parser (&);
 
 sub nothing {
-    my ($input, $continuation) = @_;
-    return $continuation->($input);
+    my $input = shift;
+    return single([undef, $input]);
 }
 
 sub null_list {
@@ -24,7 +24,7 @@ sub null_list {
 
 sub End_of_Input {
     my $input = shift;
-    defined($input) ? () : (undef, undef);
+    defined($input) ? () : single(["EOI", undef]);
 }
 
 sub single {
@@ -146,17 +146,12 @@ sub concatenate {
 
 sub alternate {
     my @p = @_;
-    return parser { return () } if @p == 0;
+    return parser { return undef } if @p == 0;
     return $p[0] if @p == 1;
     my $p;
     $p = parser {
-        my ($input, $continuation) = @_;
-        for (@p) {
-            if (my ($v) = $_->($input, $continuation)) {
-                return $v;
-            }
-        }
-        return; # this is failure
+        my $input = shift;
+        union(map $_->($input), @p);
     };
     $N{$p} = "(" . join(" | ", map $N{$_}, @p) . ")";
     return $p;
