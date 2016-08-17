@@ -27,6 +27,22 @@ sub End_of_Input {
     defined($input) ? () : (undef, undef);
 }
 
+sub single {
+    my $v = shift;
+    node($v, undef);
+}
+
+sub sunion {
+    my ($s) = @_;
+    my $cur_stream;
+    while ($s && ! $cur_stream) {
+        $cur_stream = head($s);
+        $s = tail($s);
+    }
+    return undef unless $cur_stream;
+    return node(head($cur_stream), promise { sunion(node(tail($cur_stream), $s)) });
+}
+
 # updated to allow for nested inputs from concatenate()
 # update to allow for continuations
 sub T {
@@ -65,15 +81,12 @@ sub lookfor {
         my $next = head($input);
         for my $i (0..$#$wanted) {
             next unless defined $wanted->[$i];
-            return unless $wanted->[$i] eq $next->[$i];
+            unless ($wanted->[$i] eq $next->[$i]) {
+                return undef;
+            }
         }
         my $wanted_value = $value->($next, $u);
-        # try the continuation here
-        if (my ($v) = $continuation->(tail($input))) {
-            return $wanted_value;
-        } else {
-            return;
-        }
+        return single([$wanted_value, tail($input)]);
     };
     $N{$parser} = "[@$wanted]";
     return $parser;
