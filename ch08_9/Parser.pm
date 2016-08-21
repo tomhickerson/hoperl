@@ -116,32 +116,63 @@ sub lookfor {
 
 # providing the new concatenate here from p 477, but may replace it back with the above later
 
+#sub concatenate2 {
+#    my ($A, $B) = @_;
+#    my $p;
+#    $p = parser {
+#        my ($input, $continuation) = @_;
+#        my ($aval, $bval);
+#        my $BC = parser {
+#            my ($newinput) = @_;
+#            return unless $bval = $B->($newinput, $continuation);
+#        };
+#        $N{$BC} = "$N{$B} $N{$continuation}";
+#        if (($aval) = $A->($input, $BC)) {
+#            return ([$aval, $bval]);
+#        } else {
+#            return;
+#        }
+#    };
+#    $N{$p} = "$N{$A} $N{$B}";
+#    return $p;
+#}
+
+# rewrite of concatenate again, this time from page 482
 sub concatenate2 {
-    my ($A, $B) = @_;
+    my ($S, $T) = @_;
     my $p;
     $p = parser {
-        my ($input, $continuation) = @_;
-        my ($aval, $bval);
-        my $BC = parser {
-            my ($newinput) = @_;
-            return unless $bval = $B->($newinput, $continuation);
-        };
-        $N{$BC} = "$N{$B} $N{$continuation}";
-        if (($aval) = $A->($input, $BC)) {
-            return ([$aval, $bval]);
-        } else {
-            return;
-        }
+        my $input = shift;
+        my $sparses = $S->($input);
+        sunion(transform {
+            my ($sv, $input1) = @{$_[0]};
+            my $tparses = $T->($input1);
+            transform {
+                my ($tv, $input2) = @{$_[0]};
+                [[$sv, $tv], $input2];
+            } $tparses;
+               } $sparses);
     };
-    $N{$p} = "$N{$A} $N{$B}";
+    $N{$p} = "@N{$S, $T}";
     return $p;
 }
 
+#sub concatenate {
+#    my (@p) = @_;
+#    return \&nothing if @p == 0;
+#    my $p0 = shift @p;
+#    return concatenate2($p0, concatenate(@p));
+#}
+
+# also a rewrite from page 482
 sub concatenate {
-    my (@p) = @_;
-    return \&nothing if @p == 0;
-    my $p0 = shift @p;
-    return concatenate2($p0, concatenate(@p));
+    my @p = @_;
+    return \&null if @p == 0;
+    my $p = shift @p;
+    return $p if @p == 0;
+    my $result = concatenate2($p, concatenate(@p));
+    $N{$result} = "@N{$p, @p}";
+    return $result;
 }
 
 sub alternate {
