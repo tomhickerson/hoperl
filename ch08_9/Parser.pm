@@ -45,17 +45,17 @@ sub sunion {
 
 # updated to allow for nested inputs from concatenate()
 # update to allow for continuations
+# update again from page 483
 sub T {
     my ($parser, $transform) = @_;
-    my $p = sub {
-        my ($input, $continuation) = @_;
-        if (my $v = $parser->($input, $continuation)) {
-            $v = $transform->(@$v);
-            return $v;
-        } else {
-            return;
-        }
+    my $p = parser {
+        my $input = shift;
+        transform {
+            my ($v, $input1) = @{$_[0]};
+            [$transform->($v), $input1];
+        } $parser->($input);
     };
+
     $N{$p} = $N{$parser};
     return $p;
 }
