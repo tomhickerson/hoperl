@@ -9,8 +9,8 @@ use base Exporter;
 @EXPORT_OK = qw(parser nothing End_of_Input lookfor alternate concatenate star list_of operator T error action test L);
 %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
-# sub parser (&) { bless $_[0] => __PACKAGE__ };
-sub parser (&);
+sub parser (&) { bless $_[0] => __PACKAGE__ };
+# sub parser (&);
 
 sub nothing {
     my $input = shift;
@@ -30,6 +30,12 @@ sub End_of_Input {
 sub single {
     my $v = shift;
     node($v, undef);
+}
+
+sub parser_name {
+    my $parser = shift;
+    my $key = overload::StrVal($parser);
+    exists($N{$key}) ? $N{$key} : $key;
 }
 
 sub sunion {
@@ -109,10 +115,10 @@ sub lookfor {
 #    }
 #}
 
-#sub concatenate2 {
-#    my ($A, $B) = @_;
-#    concatenate($A, $B);
-#}
+sub concatenate2 {
+    my ($A, $B) = @_;
+    concatenate($A, $B);
+}
 
 # providing the new concatenate here from p 477, but may replace it back with the above later
 
@@ -138,24 +144,24 @@ sub lookfor {
 #}
 
 # rewrite of concatenate again, this time from page 482
-sub concatenate2 {
-    my ($S, $T) = @_;
-    my $p;
-    $p = parser {
-        my $input = shift;
-        my $sparses = $S->($input);
-        sunion(transform {
-            my ($sv, $input1) = @{$_[0]};
-            my $tparses = $T->($input1);
-            transform {
-                my ($tv, $input2) = @{$_[0]};
-                [[$sv, $tv], $input2];
-            } $tparses;
-               } $sparses);
-    };
-    $N{$p} = "@N{$S, $T}";
-    return $p;
-}
+#sub concatenate2 {
+#    my ($S, $T) = @_;
+#    my $p;
+#    $p = parser {
+#        my $input = shift;
+#        my $sparses = $S->($input);
+#        sunion(transform {
+#            my ($sv, $input1) = @{$_[0]};
+#            my $tparses = $T->($input1);
+#            transform {
+#                my ($tv, $input2) = @{$_[0]};
+#                [[$sv, $tv], $input2];
+#            } $tparses;
+#               } $sparses);
+#    };
+#    $N{$p} = "@N{$S, $T}";
+#    return $p;
+#}
 
 #sub concatenate {
 #    my (@p) = @_;
@@ -223,12 +229,12 @@ sub operator {
 # note that originally the author wanted us to create _ as the function name, but later recanted this in the errata.  So, we pick L for Lookfor.
 sub L { @_ = [@_]; goto &lookfor }
 
-sub parser (&) { bless $_[0] => __PACKAGE__ };
+#sub parser (&) { bless $_[0] => __PACKAGE__ };
 
 use overload '-' => \&concatenate2,
     '|' => \&alternate2,
     '>>' => \&T,
-    '""' => \&overload::StrVal;
+    '""' => \&parser_name;
 # the author later states that we could use "" to pull out the parser name with a parser_name function, but we'll keep this for now
 
 # adding the error subroutine from pages 429-430
