@@ -9,6 +9,8 @@ use Lexer ':all';
 my @input = q[a=12345679 * 6; b= a * 9; c=0 print b; c=4 ** 2; print c;];
 my $input = sub { return shift @input };
 
+print "do we get this far?\n";
+
 my $lexer = iterator_to_stream(
                make_lexer($input,
                        ['TERMINATOR', qr/;\n*|\n+/                 ],
@@ -20,7 +22,7 @@ my $lexer = iterator_to_stream(
                )
              );
 
-# print "do we get this far?";
+print "do we get this far?";
 ## Chapter 8 section 4.6
 
 my %VAR;
