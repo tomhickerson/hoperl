@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Parser ':all';
+use ParserOverload ':all';
 use Lexer ':all';
 # slightly modified version of the calculator, as we want to get input not from a file just yet
 
@@ -9,7 +9,7 @@ use Lexer ':all';
 my @input = q[a=12345679 * 6; b= a * 9; c=0 print b; c=4 ** 2; print c;];
 my $input = sub { return shift @input };
 
-print "do we get this far?\n";
+#print "do we get this far?\n";
 
 my $lexer = iterator_to_stream(
                make_lexer($input,
@@ -22,7 +22,10 @@ my $lexer = iterator_to_stream(
                )
              );
 
-print "do we get this far?";
+use Data::Dumper;
+#print Dumper($input);
+
+#print "do we get this far?";
 ## Chapter 8 section 4.6
 
 my %VAR;
@@ -37,7 +40,7 @@ $Term       = parser { $term->(@_) };
 
 # modifying all the following for overloading in section 8.9
 
-$program = star($Statement) - \&End_of_Input;
+$program = star($Statement) - \&ParserOverload::End_of_Input;
 
 $statement = L("PRINT") - $Expression - L('TERMINATOR')
                        >>  sub { print ">> $_[1]\n" }
@@ -63,7 +66,7 @@ $term = $Factor - star(L('OP', '*') - $Factor
 
 $factor = $Base - (L('OP', '**') - $Factor >> sub { $_[1] }
     |
-    $Parser::nothing >> sub { 1 }
+    $ParserOverload::nothing >> sub { 1 }
     )
     >> sub { $_[0] ** $_[1] };
 
