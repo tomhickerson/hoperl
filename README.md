@@ -1,7 +1,7 @@
 # hoperl
 This is a run-through and a review of exercises from Higher-Order Perl, by Mark Jason Dominus, located online at http://hop.perl.plover.com/.
 
-The book was originally published in 2005, and some source code is available elsewhere, but I worked through most of the code here myself.
+The book was originally published in 2005, and some source code is available elsewhere, but I worked through most of the code here myself.  My goal was to set up executable code with all the examples, and have a small library of higher-order functions available to use for solving other problems at the end of the book.
 
 ## tl;dr
 
