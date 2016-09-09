@@ -59,10 +59,11 @@ while (@data) {
     $pat = shift @data;
     # print "shifted " . $num .  " and " . $pat . "\n";
     my $ans = *fib->($num);
-    my $printans = $ans;
-    # why do the above?  because $ans will be transformed
-    my $count = $ans =~ s/$pat/$1/g;
-    print "Case " . $line . ": for " . $printans . " - " . $count . "\n";
+    my $count = 0;
+    while ($ans =~ /(?=$pat)/g) {
+        $count++;
+    }
+    print "Case " . $line . ": " . $count . "\n";
 }
 
 END {
