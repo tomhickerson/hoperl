@@ -17,3 +17,5 @@ Together with the above, the run-through of all the code scratched a number of p
 * Working with a language I know on a daily basis, in a more functional context
 
 Most of the code here is being pushed into git from a Linux cloud server, using command-line tools only and Emacs, together with the emacs.d file found here: https://github.com/purcell.
+
+This is just an additional update, watch this space.
